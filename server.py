@@ -949,6 +949,6 @@ if __name__ == "__main__":
     app = mcp.streamable_http_app()
     app.add_middleware(LowercasePathMiddleware)
     port = int(os.environ.get("PORT", 8000))
-    log.info("Starting server on port %s with transport=%s", port, MCP_TRANSPORT)
+    logger.info("Starting server on port %s with transport=%s", port, MCP_TRANSPORT)
     uvicorn.run(app, host="0.0.0.0", port=port)
   
