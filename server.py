@@ -931,7 +931,24 @@ async def shopify_create_webhook(params: CreateWebhookInput) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Middleware: lowercase all URL paths so /MCP, /Mcp, /mcp all work
+# ---------------------------------------------------------------------------
+from starlette.middleware.base import BaseHTTPMiddleware
+
+class LowercasePathMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+          request.scope["path"] = request.scope["path"].lower()
+          return await call_next(request)
+
+
+# ---------------------------------------------------------------------------
 # Entrypoint
 # ---------------------------------------------------------------------------
 if __name__ == "__main__":
-    mcp.run(transport=MCP_TRANSPORT)
+    import uvicorn
+    app = mcp.streamable_http_app()
+    app.add_middleware(LowercasePathMiddleware)
+    port = int(os.environ.get("PORT", 8000))
+    log.info("Starting server on port %s with transport=%s", port, MCP_TRANSPORT)
+    uvicorn.run(app, host="0.0.0.0", port=port)
+  
